@@ -1,7 +1,9 @@
 import configparser
+from os import path
 
+log_file_path = path.join(path.dirname(path.abspath(__file__)), 'config.ini')
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read(log_file_path)
 
 def export(file_path, content):
     with open(file_path, 'a', encoding='utf-8') as file:
