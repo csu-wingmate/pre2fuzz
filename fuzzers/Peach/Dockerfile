@@ -1,4 +1,3 @@
-
 # 使用 Ubuntu 20.04 作为基础镜像
 FROM ubuntu:20.04
 
@@ -64,15 +63,8 @@ RUN /bin/bash /etc/profile
 WORKDIR /root/
 RUN mkdir tasks
 COPY --chown=ubuntu:ubuntu Peach /root/Peach/
-
-# 设置工作目录
-WORKDIR /root/Peach/bin/
-# 设置环境变量 FUZZERPATH 为当前工作目录的路径
-ENV FUZZERPATH $PWD
-
-
+COPY --chown=ubuntu:ubuntu --chmod=755 run.sh /root/run.sh
 
 
 # 容器启动命令
 CMD ["bash"]
-
