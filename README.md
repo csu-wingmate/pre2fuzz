@@ -8,25 +8,32 @@ prefuzzbench
 │       └── lightftp
 │           └── Dockerfile: for building the Docker image specific to the target server
 │           └── run.sh: main script to run the experiment inside a Docker container
-│           └── other necessary files (e.g., patches, scripts)
+│           └── other necessary files
 └── scripts: contains all scripts for running experiments and analyzing results
     ├── execution
-    │   └── profuzzpeach_exec_common.sh: main script to run fuzzing experiments
+    │   └── prefuzzbench_pre.sh: main script to run reverse experiments
+    │   └── transform.py: main script to run transform experiments
+    │   └── prefuzzbench_fuzz.sh: main script to run fuzzing experiments
+    │   ...
     └── analysis
         └── profuzzbench_plot.py: sample script for plotting the results
+└── config.ini: configuration file
 └── README.md: this file
 ```
-
-# Tutorial - Fuzzing LightFTP server with Peach and Peach*
+# Fuzzers
+PreFuzzBench provides automation scripts for protocol reverse engineering and fuzzing with two fuzzers: Peach, and PeachStar.
+In the following tutorial, you can find instructions to run Peach and PeachStar.
+# Tutorial - Fuzzing LightFTP server with Peach and PeachStar
+Follow the steps below to run and collect experimental results for LightFTP, which is a lightweight File Transfer Protocol (FTP) server. The similar steps should be followed to run experiments on other subjects.
 ## Step-0. Set up environmental variables
 ```
-git clone https://github.com/csu-wingmate/profuzzpeach.git
-cd profuzzpeach
+git clone https://github.com/csu-wingmate/prefuzzbench.git
+cd prefuzzbench
 export PFBENCH=$(pwd)
 export PATH=$PATH:$PFBENCH/scripts/execution:$PFBENCH/scripts/analysis
 ```
 
-## Step-1. Build a Fuzzer Docker image and a Protocol Docker image
+## Step-1. Build a reverse tool docker image, a fuzzer docker image and a protocol docker image
 ```bash
 cd $PFBENCH
 cd fuzzers/Peach
@@ -37,23 +44,22 @@ cd $PFBENCH
 cd subjects/FTP/lightftp
 docker build . -t lightftp
 ```
-
-## Step-2. Run fuzzing
-- ***1st argument (PROTOCOL)*** : name of the protocol Implementation
-- ***2nd argument (RUNS)***     : number of runs, one isolated Docker container is spawned for each run
-- ***3rd argument (SAVETO)***   : path to a folder keeping the results
-- ***4th argument (FUZZER)***   : fuzzer name (e.g., aflnet) -- this name must match the name of the fuzzer folder inside the Docker container (e.g., /home/ubuntu/aflnet)
-- ***5th argument (TIMEOUT)***  : time for fuzzing in seconds
-The following commands run 4 instances of Peach and 4 instances of Peach* to simultaneously fuzz LightFTP for 5 minutes.
-
 ```bash
-cd $PFBENCH
-mkdir results-lightftp
-
-profuzzpeach_exec_common.sh lightftp 4 results-lightftp peach 300 &
-profuzzpeach_exec_common.sh lightftp 4 results-lightftp peachstar 300
+docker pull csuzdf/tools:netplier
 ```
 
+## Step-2. Run reversing
+Run prefuzzbench_pre.sh script to start an experiment. The script takes 3 arguments as listed below.
+- ***1st argument (PROTOCOL)*** : name of the protocol implementation
+- ***2th argument (PRE)***   : reverse tool name (e.g., netplier)
+- ***3th argument (TIMEOUT)***  : time for fuzzing in seconds
+The following commands run an instance of Peach to fuzz LightFTP for 5 minutes.
+
+```bash
+cd $PFBENCH/scripts
+profuzzpeach_pre.sh lightftp csuzdf/tools:netplier 300
+```
+_________________
 A successful script execution will produce output similar to this:
 ```
 Peach: Fuzzing in progress ...
@@ -61,10 +67,38 @@ Peach: Waiting for the following containers to stop:  f2da4b72b002 b7421386b288 
 Peach: I am done!
 ```
 
-## Step-3. Collect the results
+## Step-3. Run transforming
+The following commands transform the reverse result to a Pit file.
+
+```bash
+cd $PFBENCH/scripts
+python transform.py
+```
+
+## Step-4. Run fuzzing
+- ***1st argument (PROTOCOL)*** : name of the protocol Implementation
+- ***2rd argument (SAVETO)***   : path to a folder keeping the results
+- ***3th argument (FUZZER)***   : fuzzer name (e.g., peach)
+- ***4th argument (TIMEOUT)***  : time for fuzzing in seconds
+The following commands run an instances of Peach to fuzz LightFTP for 5 minutes.
+
+```bash
+cd $PFBENCH
+mkdir results-lightftp
+
+prefuzzpeach_fuzz.sh lightftp results-lightftp peach 300
+```
+A successful script execution will produce output similar to this:
+```
+Peach: Fuzzing in progress ...
+Peach: Waiting for the following containers to stop:  f2da4b72b002 b7421386b288 cebbbc741f93 5c54104ddb86
+Peach: I am done!
+```
+
+## Step-5. Collect the results
 All results are stored in tar files within the folder created in Step-2 (results-lightftp). This includes directories named similarly to peach-1-branch and peach-1-logs, where peach-1-branch contains the collected branch coverage data and peach-1-logs contains the log files from the Peach testing process, including the number of test runs and potential bug reports.
 
-## Step-4. Analyze the results
+## Step-6. Analyze the results
 The branch coverage data collected in Step 3 can be used for plotting. We provide a sample Python script profuzzbench_plot.py to visualize code coverage over time. Use the following command to plot the results and save them to a file.
 ```bash
 cd $PFBENCH/results-lightftp
@@ -72,9 +106,6 @@ cd $PFBENCH/results-lightftp
 profuzzbench_plot.py -i <input_data> -o <output_plot_file>
 ```
 Replace <input_data> with the path to your coverage data and <output_plot_file> with the desired filename for your plot.
-
-# Utility Scripts
-ProFuzzPeach includes scripts for building and running all fuzzers on all targets with pre-configured parameters. To build all targets for all fuzzers, run the script profuzzpeach_build_all.sh. To execute the fuzzers, use the script profuzzpeach_exec_all.sh.
 
 # FAQs
 ## 1. How do I extend ProFuzzPeach?
