@@ -2,8 +2,8 @@
 ProFuzzBench is a bridge toolkit for protocol reverse engineering and protocol fuzzing with Peach and PeachStar. It includes a suite of representative open-source network servers for popular protocols (e.g., FTP), and tools to automate experimentation.
 # Folder Structure
 ```
-profuzzpeach
-├── subjects: contains folders for different protocol implementations
+prefuzzbench
+├── subjects: contains different protocol implementations
 │   └── FTP
 │       └── lightftp
 │           └── Dockerfile: for building the Docker image specific to the target server
