@@ -45,9 +45,7 @@ cd subjects/FTP/lightftp
 docker build . -t lightftp
 ```
 ```bash
-cd $PFBENCH
-cd pre_tools
-netplier.sh
+docker pull csuzdf/tools:netplier
 ```
 
 ## Step-2. Run reversing
