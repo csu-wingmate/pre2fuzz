@@ -1,5 +1,5 @@
-# PREFuzzBench - A Bridge Toolkit for Protocol Reverse Engineering and Protocol Fuzzing with Peach and PeachStar
-ProFuzzBench is a bridge toolkit for protocol reverse engineering and protocol fuzzing with Peach and PeachStar. It includes a suite of representative open-source network servers for popular protocols (e.g., FTP), and tools to automate experimentation.
+# PRE2Fuzz - Bridging Protocol Reverse Engineering and Protocol Fuzzing
+PRE2Fuzz is for bridging protocol reverse engineering and protocol fuzzing. It includes a suite of representative open-source network servers for popular protocols (e.g., FTP), and tools to automate experimentation.
 # Folder Structure
 ```
 prefuzzbench
@@ -20,10 +20,8 @@ prefuzzbench
 └── config.ini: configuration file
 └── README.md: this file
 ```
-# Fuzzers
-PreFuzzBench provides automation scripts for protocol reverse engineering and fuzzing with two fuzzers: Peach, and PeachStar.
-In the following tutorial, you can find instructions to run Peach and PeachStar.
-# Tutorial - Fuzzing LightFTP server with Peach and PeachStar
+# quickstart(最佳实践)Tutorial - Fuzzing LightFTP server with Peach and PeachStar
+# features：独立执行、合并
 Follow the steps below to run and collect experimental results for LightFTP, which is a lightweight File Transfer Protocol (FTP) server. The similar steps should be followed to run experiments on other subjects.
 ## Step-0. Set up environmental variables
 ```
