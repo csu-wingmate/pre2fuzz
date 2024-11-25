@@ -20,8 +20,7 @@ prefuzzbench
 └── config.ini: configuration file
 └── README.md: this file
 ```
-# quickstart(最佳实践)Tutorial - Fuzzing LightFTP server with Peach and PeachStar
-# features：独立执行、合并
+# Quick Start - Fuzzing LightFTP server with Peach and PeachStar
 Follow the steps below to run and collect experimental results for LightFTP, which is a lightweight File Transfer Protocol (FTP) server. The similar steps should be followed to run experiments on other subjects.
 ## Step-0. Set up environmental variables
 ```
