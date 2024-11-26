@@ -1,7 +1,7 @@
 import configparser
 from os import path
 
-log_file_path = path.join(path.dirname(path.abspath(__file__)), 'config.ini')
+log_file_path = path.join(path.dirname(path.abspath(__file__)), '../config.ini')
 config = configparser.ConfigParser()
 config.read(log_file_path)
 
