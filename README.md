@@ -26,6 +26,8 @@ Follow the steps below to run and collect experimental results for LightFTP, whi
 ```
 git clone https://github.com/csu-wingmate/prefuzzbench.git
 cd prefuzzbench
+sudo mkdir in
+sudo mkdir pits
 export PFBENCH=$(pwd)
 export PATH=$PATH:$PFBENCH/scripts/execution:$PFBENCH/scripts/analysis
 ```
