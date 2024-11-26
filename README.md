@@ -81,15 +81,9 @@ The following commands run an instances of Peach to fuzz LightFTP for 5 minutes.
 
 ```bash
 cd $PFBENCH
-mkdir results-lightftp
+sudo mkdir results-lightftp
 sudo chmod +x prefuzzbench_fuzz.sh
-./prefuzzbench_fuzz.sh lightftp results-lightftp peach 300
-```
-A successful script execution will produce output similar to this:
-```
-Peach: Fuzzing in progress ...
-Peach: Waiting for the following containers to stop:  f2da4b72b002 b7421386b288 cebbbc741f93 5c54104ddb86
-Peach: I am done!
+sudo ./scripts/prefuzzbench_fuzz.sh lightftp results-lightftp peach 300
 ```
 
 ## Step-5. Collect the results
