@@ -1,5 +1,5 @@
-# PRE2Fuzz - Bridging Protocol Reverse Engineering and Protocol Fuzzing
-PRE2Fuzz is for bridging protocol reverse engineering and protocol fuzzing. It includes a suite of representative open-source network servers for popular protocols (e.g., FTP), and tools to automate experimentation.
+# PREFuzzBench - Bridging Protocol Reverse Engineering and Protocol Fuzzing
+PREFuzzBench is for bridging protocol reverse engineering and protocol fuzzing. It includes a suite of representative open-source network servers for popular protocols (e.g., FTP), and tools to automate experimentation.
 # Folder Structure
 ```
 prefuzzbench
