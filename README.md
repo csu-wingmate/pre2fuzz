@@ -54,7 +54,8 @@ The following commands run an instance of Peach to fuzz LightFTP for 5 minutes.
 
 ```bash
 cd $PFBENCH/scripts
-prefuzzbench_pre.sh lightftp csuzdf/tools:netplier 300
+sudo chmod +x prefuzzbench_pre.sh
+./prefuzzbench_pre.sh lightftp csuzdf/tools:netplier 300
 ```
 _________________
 A successful script execution will produce output similar to this:
@@ -82,8 +83,8 @@ The following commands run an instances of Peach to fuzz LightFTP for 5 minutes.
 ```bash
 cd $PFBENCH
 mkdir results-lightftp
-
-prefuzzbench_fuzz.sh lightftp results-lightftp peach 300
+sudo chmod +x prefuzzbench_fuzz.sh
+./prefuzzbench_fuzz.sh lightftp results-lightftp peach 300
 ```
 A successful script execution will produce output similar to this:
 ```
