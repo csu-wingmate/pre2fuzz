@@ -42,7 +42,7 @@ cd subjects/FTP/lightftp
 docker build . -t lightftp
 ```
 ```bash
-docker pull csuzdf/tools:netplier
+docker pull netplier:out
 ```
 
 ## Step-2. Run reversing
@@ -55,7 +55,7 @@ The following commands run an instance of Peach to fuzz LightFTP for 5 minutes.
 ```bash
 cd $PFBENCH/scripts
 sudo chmod +x prefuzzbench_pre.sh
-./prefuzzbench_pre.sh lightftp csuzdf/tools:netplier 300
+./prefuzzbench_pre.sh lightftp netplier:out 300
 ```
 _________________
 A successful script execution will produce output similar to this:
