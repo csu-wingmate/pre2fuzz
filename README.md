@@ -110,13 +110,3 @@ cd scripts
 sudo chmod +x prefuzzbench_common.sh
 sudo ./prefuzzbench_common.sh lightftp results-lightftp netplier:out peach 300
 ```
-
-# FAQs
-## 1. How do I extend ProFuzzPeach?
-To add a new protocol and/or a new target server for a supported protocol, follow the folder structure outlined above and complete the following steps, using LightFTP as an example:
-
-### Step-1. Create a new folder for the protocol/target server
-The folder for LightFTP server is located at subjects/FTP/LightFTP.
-
-### Step-2. Write a Dockerfile and prepare subject-specific scripts/files
-Refer to the existing folder structure for LightFTP
