@@ -68,7 +68,7 @@ NETPLIER:OUT: I am done!
 
 ## Step-3. Run transforming
 The following commands transform the reverse result to a Pit file.
-
+Before running the script, you should edit the config.ini as your wish.
 ```bash
 cd $PFBENCH/scripts
 sudo python transform.py
@@ -84,8 +84,9 @@ The following commands run an instances of Peach to fuzz LightFTP for 5 minutes.
 ```bash
 cd $PFBENCH
 sudo mkdir results-lightftp
+cd scripts
 sudo chmod +x prefuzzbench_fuzz.sh
-sudo ./scripts/prefuzzbench_fuzz.sh lightftp results-lightftp peach 300
+sudo ./prefuzzbench_fuzz.sh lightftp results-lightftp peach 300
 ```
 
 ## Step-5. Collect the results
@@ -99,6 +100,16 @@ cd $PFBENCH/results-lightftp
 profuzzbench_plot.py -i <input_data> -o <output_plot_file>
 ```
 Replace <input_data> with the path to your coverage data and <output_plot_file> with the desired filename for your plot.
+
+## Full process excution
+You can also run the prefuzzbench_common script for the full process excution.
+```bash
+cd $PFBENCH
+sudo mkdir results-lightftp
+cd scripts
+sudo chmod +x prefuzzbench_common.sh
+sudo ./prefuzzbench_common.sh lightftp results-lightftp netplier:out peach 300
+```
 
 # FAQs
 ## 1. How do I extend ProFuzzPeach?
