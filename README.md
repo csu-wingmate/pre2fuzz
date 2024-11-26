@@ -69,7 +69,7 @@ The following commands transform the reverse result to a Pit file.
 
 ```bash
 cd $PFBENCH/scripts
-python transform.py
+sudo python transform.py
 ```
 
 ## Step-4. Run fuzzing
