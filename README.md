@@ -20,7 +20,7 @@ prefuzzbench
 └── config.ini: configuration file
 └── README.md: this file
 ```
-# Quick Start - Fuzzing LightFTP server with Peach and PeachStar
+# Quick Start - Reversing LightFTP traffic with NetPlier and Fuzzing LightFTP server with Peach
 Follow the steps below to run and collect experimental results for LightFTP, which is a lightweight File Transfer Protocol (FTP) server. The similar steps should be followed to run experiments on other subjects.
 ## Step-0. Set up environmental variables
 ```
@@ -60,9 +60,8 @@ sudo chmod +x prefuzzbench_pre.sh
 _________________
 A successful script execution will produce output similar to this:
 ```
-Peach: Fuzzing in progress ...
-Peach: Waiting for the following containers to stop:  f2da4b72b002 b7421386b288 cebbbc741f93 5c54104ddb86
-Peach: I am done!
+NETPLIER:OUT: Collecting results from container and save them to $PFBENCH/in
+NETPLIER:OUT: I am done!
 ```
 
 ## Step-3. Run transforming
