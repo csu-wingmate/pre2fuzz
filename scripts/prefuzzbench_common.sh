@@ -9,11 +9,9 @@ DELETE=$6
 
 WORKDIR="/root"
 
-# $PFBENCH: /root/prefuzzbench
-$PFBENCH/prefuzzbench_pre.sh ${PROTOCOL} ${PRE} ${TIMEOUT}
+# $PFBENCH: /opt/prefuzzbench
+sudo $PFBENCH/prefuzzbench_pre.sh ${PROTOCOL} ${PRE} ${TIMEOUT}
 
 sudo python $PFBENCH/transform.py
 
-mv /opt/out/${PROTOCOL}.xml $PFBENCH/pits
-
-$PFBENCH/prefuzzbench_fuzz.sh ${PROTOCOL} ${SAVETO} ${FUZZER} ${TIMEOUT}
+sudo $PFBENCH/prefuzzbench_fuzz.sh ${PROTOCOL} ${SAVETO} ${FUZZER} ${TIMEOUT}
