@@ -9,7 +9,7 @@ WORKDIR="/root"
 
 # create one container for pre
 # $PFBENCH: /root/prefuzzbench
-pid=$(docker run -v $PFBENCH/pcaps/:$/opt/pcaps/ -itd ${PRE} /bin/bash -c "python /root/NetPlier/netplier/main.py -i /opt/pcaps/${PROTOCOL}.pcap -o zwl_result/MODBUS_1out -r /opt/pits/${PROTOCOL}.out -l 5")
+pid=$(docker run -v $PFBENCH/pcaps/:/opt/pcaps/ -itd ${PRE} /bin/bash -c "python /root/NetPlier/netplier/main.py -i /opt/pcaps/${PROTOCOL}.pcap -o zwl_result/MODBUS_1out -r /opt/pits/${PROTOCOL}.out -l 5")
 
 docker wait ${pid} > /dev/null
 
