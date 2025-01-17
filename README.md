@@ -1,8 +1,8 @@
-# PREFuzzBench - Bridging Protocol Reverse Engineering and Protocol Fuzzing
-PREFuzzBench is for bridging protocol reverse engineering and protocol fuzzing. It includes a suite of representative open-source network servers for popular protocols (e.g., FTP), and tools to automate experimentation.
+# PRE2Fuzz - Bridging Protocol Reverse Engineering and Protocol Fuzzing
+PRE2Fuzz is for bridging protocol reverse engineering and protocol fuzzing. It includes a suite of representative open-source network servers for popular protocols (e.g., FTP), and tools to automate experimentation.
 # Folder Structure
 ```
-prefuzzbench
+pre2fuzz
 ├── subjects: contains different protocol implementations
 │   └── FTP
 │       └── lightftp
@@ -24,8 +24,8 @@ prefuzzbench
 Follow the steps below to run and collect experimental results for LightFTP, which is a lightweight File Transfer Protocol (FTP) server. The similar steps should be followed to run experiments on other subjects.
 ## Step-0. Set up environmental variables
 ```
-git clone https://github.com/csu-wingmate/prefuzzbench.git
-cd prefuzzbench
+git clone https://github.com/csu-wingmate/pre2fuzz.git
+cd pre2fuzz
 sudo mkdir in
 sudo mkdir pits
 export PFBENCH=$(pwd)
