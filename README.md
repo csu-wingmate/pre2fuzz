@@ -44,6 +44,7 @@ cd subjects/FTP/lightftp
 docker build . -t lightftp
 ```
 ```bash
+# netplier and netzob share a common docker image
 docker pull netplier:out
 ```
 
