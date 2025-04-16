@@ -5,7 +5,6 @@ FUZZER=""
 TEMPLATE=""
 TIMEOUT=""
 SAVETO=""
-DELETE=""
 
 while getopts "p:f:x:t:o:" opt; do
   case $opt in
