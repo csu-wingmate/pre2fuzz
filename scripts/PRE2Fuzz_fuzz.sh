@@ -54,6 +54,7 @@ docker wait ${fid} > /dev/null
 
 wait
 
+printf "3.Fuzzing"
 printf "\n${FUZZER^^}: Collecting results from container${fid} and save them to ${SAVETO}"
 
 docker cp ${fid}:${WORKDIR}/logs ${SAVETO}/${FUZZER}_logs
