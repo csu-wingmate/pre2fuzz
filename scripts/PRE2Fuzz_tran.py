@@ -26,6 +26,8 @@ def write_file(file_path, data):
             file.write(line + '\n')
 
 def transform(input_file_path, message_order_file, message_direction_file, output_file_path):
+    print("2.Transforming")
+    print("Enhancing protocol format inference results.")
     S = read_file(input_file_path)
     
     O = read_file(message_order_file)
@@ -50,6 +52,8 @@ def transform(input_file_path, message_order_file, message_direction_file, outpu
     
     write_file(o, Or)
 
+    print("Transforming the format inferred result to the fuzzing template and save it to ", end=" ")
+    print(output_file_path)
     export(output_file_path, LINE1)
     export(output_file_path, LINE2)
     export(output_file_path, LINE3)
