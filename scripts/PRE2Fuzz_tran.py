@@ -1,4 +1,5 @@
 import configparser
+import argparse
 from os import path
 
 log_file_path = path.join(path.dirname(path.abspath(__file__)), '../config.ini')
@@ -14,9 +15,8 @@ LINE2 = "<Peach xmlns=\"http://peachfuzzer.com/2012/Peach\" xmlns:xsi=\"http://w
 LINE3 = "\txsi:schemaLocation=\"http://peachfuzzer.com/2012/Peach ../peach.xsd\">"
 LAST_LINE = "</Peach>"
 
-def transform():
-    input_file_path = config['base']['input']
-    output_file_path = config['base']['output']
+def transform(input_file_path, message_order_file, message_direction_file, output_file_path):
+
 
     export(output_file_path, LINE1)
     export(output_file_path, LINE2)
@@ -91,4 +91,10 @@ def gen_agent(file_path):
     export(file_path, "\t</Agent>")
 
 if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description='Transform protocol messages to Peach Fuzzer XML format.')
+    parser.add_argument('-fi', required=True, help='Input file containing the raw protocol messages.')
+    parser.add_argument('-mo', required=True, help='File containing the format inference results.')
+    parser.add_argument('-md', required=True, help='File containing the message direction list.')
+    parser.add_argument('-o', required=True, help='Output file to save the refined results.')
+    args = parser.parse_args()
     transform()
