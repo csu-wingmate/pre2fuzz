@@ -40,6 +40,7 @@ pid=$(docker run -v "$PFBENCH/pcaps:/opt/" -itd "$TOOL" /bin/bash -c "python /ro
 
 docker wait "$pid" > /dev/null
 
+printf "1.Inferring"
 printf "\n${TOOL^^}: Collecting results from container$pid and save them to $OUTPUT_DIR"
 sudo docker cp "$pid:/opt/$PROTOCOL.out" "$OUTPUT_DIR/"
 
