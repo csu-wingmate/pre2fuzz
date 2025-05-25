@@ -1,77 +1,51 @@
 #!/bin/bash
-
-PROTOCOL=""
-FUZZER=""
-TEMPLATE=""
-TIMEOUT=""
-SAVETO=""
-
-while getopts "p:f:x:t:o:" opt; do
-  case $opt in
-    p)
-      PROTOCOL=$OPTARG
-      ;;
-    f)
-      FUZZER=$OPTARG
-      ;;
-    x)
-      TEMPLATE=$OPTARG
-      ;;
-    t)
-      TIMEOUT=$OPTARG
-      ;;
-    o)
-      SAVETO=$OPTARG
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      exit 1
-      ;;
-    :)
-      echo "Option -$OPTARG requires an argument." >&2
-      exit 1
-      ;;
-  esac
-done
-
-if [ -z "$PROTOCOL" ] || [ -z "$FUZZER" ] || [ -z "$TEMPLATE" ] || [ -z "$TIMEOUT" ] || [ -z "$SAVETO" ]; then
-  echo "Usage: $0 -p <protocol> -f <fuzzer> -x <template> -t <timeout> -o <save_path>"
-  exit 1
-fi
+PROTOCOL=$1   #name of the protocol
+SAVETO=$2     #path to folder keeping the results
+FUZZER=$3     #fuzzer name (e.g., peach) 
+TIMEOUT=$4    #time for fuzzing
+DELETE=$5
+# prefuzzpeach_fuzz.sh lightftp results-lightftp peach 300
 
 WORKDIR="/root"
 
-pid=$(docker run -itd${PROTOCOL} /bin/bash -c "cd ${WORKDIR} && ./run.sh")
+# create one container for fuzz
+# $PFBENCH: /root/prefuzzbench
+pid=$(docker run -itd ${PROTOCOL} /bin/bash -c "cd ${WORKDIR} && ./run.sh")
 
-EXTERNAL_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}'${pid})
+# protocol的IP地址
+EXTERNAL_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' ${pid})
 
-sed -i -e 's|<Param name="Host" value="[^"]*"/>|<Param name="Host" value="'$EXTERNAL_IP'"/>|' "$TEMPLATE"
+# 使用sed命令替换Host参数的值
+sed -i -e 's|<Param name="Host" value="[^"]*"/>|<Param name="Host" value="'$EXTERNAL_IP'"/>|' "$PFBENCH/pits/${PROTOCOL}.xml"
 
-fid=$(docker run -v$(dirname "$TEMPLATE"):${WORKDIR}/tasks/ -d -it ${FUZZER} /bin/bash -c  "timeout${TIMEOUT} mono ${WORKDIR}/Peach/bin/peach.exe${WORKDIR}/tasks/$(basename "$TEMPLATE")") 
+fid=$(docker run -v $PFBENCH/pits/:${WORKDIR}/tasks/ -d -it ${FUZZER} /bin/bash -c  "timeout ${TIMEOUT} mono ${WORKDIR}/Peach/bin/peach.exe ${WORKDIR}/tasks/${PROTOCOL}.xml") 
 
 docker wait ${fid} > /dev/null
 
+# 等待所有后台进程结束
 wait
 
-printf "3.Fuzzing"
-printf "\n${FUZZER^^}: Collecting results from container${fid} and save them to ${SAVETO}"
+#collect the fuzzing results from the containers
+printf "\n${FUZZER^^}: Collecting results from container ${fid} and save them to ${SAVETO}"
 
-docker cp ${fid}:${WORKDIR}/logs ${SAVETO}/${FUZZER}_logs
+# Copy the 'logs' folders from the container to the local directory
+docker cp ${fid}:${WORKDIR}/logs ${SAVETO}/${FUZZER}_${index}_logs
 
-if [ ! -z "$DELETE" ]; then
+if [ ! -z $DELETE ]; then
   printf "\nDeleting ${fid}"
   docker stop ${fid}
-  docker rm ${fid}
+  docker rm ${fid} # Remove container now that we don't need it
 fi
 
-printf "\n${FUZZER^^}: Collecting results from container${pid}"
+printf "\n${FUZZER^^}: Collecting results from container ${pid}"
 
-docker cp ${pid}:${WORKDIR}/branch ${SAVETO}/${FUZZER}_branch
+# Copy the 'branch' folders from the container to the local directory
+docker cp ${pid}:${WORKDIR}/branch ${SAVETO}/${FUZZER}_${index}_branch
 
-if [ ! -z "$DELETE" ]; then
+if [ ! -z $DELETE ]; then
   printf "\nDeleting ${pid}"
   docker stop ${pid}
-  docker rm ${pid}
+  docker rm ${pid} # Remove container now that we don't need it
 fi
 
 printf "\n${FUZZER^^}: I am done!\n"
