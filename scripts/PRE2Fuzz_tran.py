@@ -1,5 +1,4 @@
 import configparser
-import argparse
 from os import path
 
 log_file_path = path.join(path.dirname(path.abspath(__file__)), '../config.ini')
@@ -15,58 +14,23 @@ LINE2 = "<Peach xmlns=\"http://peachfuzzer.com/2012/Peach\" xmlns:xsi=\"http://w
 LINE3 = "\txsi:schemaLocation=\"http://peachfuzzer.com/2012/Peach ../peach.xsd\">"
 LAST_LINE = "</Peach>"
 
-def read_file(file_path):
-    with open(file_path, 'r') as file:
-        lines = file.readlines()
-    return [line.strip() for line in lines]
+def transform():
+    input_file_path = config['base']['input']
+    output_file_path = config['base']['output']
 
-def write_file(file_path, data):
-    with open(file_path, 'w') as file:
-        for line in data:
-            file.write(line + '\n')
-
-def transform(input_file_path, message_order_file, message_direction_file, output_file_path):
-    print("2.Transforming")
-    print("Enhancing protocol format inference results.")
-    S = read_file(input_file_path)
-    
-    O = read_file(message_order_file)
-    
-    L = {}
-    for line in read_file(message_direction_file):
-        hex_stream, direction = line.split(',')
-        L[hex_stream] = int(direction)
-    
-    for i in range(len(S)):
-        for j in range(i, len(O)):
-            if S[i] == O[j]:
-                O[i], O[j] = O[j], O[i]
-                break
-    
-    Or = []
-    for item in O:
-        direction = '00' if L[item] == 0 else '01'
-        Or.append(item + ' ' + direction)
-
-    o = "/root/tmp/tmp.out"
-    
-    write_file(o, Or)
-
-    print("Transforming the format inferred result to the fuzzing template and save it to ", end=" ")
-    print(output_file_path)
     export(output_file_path, LINE1)
     export(output_file_path, LINE2)
     export(output_file_path, LINE3)
 
-    index_of_line = gen_data_model(o, output_file_path)
+    index_of_line = gen_data_model(input_file_path, output_file_path)
     gen_state_model(output_file_path, index_of_line)
     gen_test(output_file_path)
     gen_agent(output_file_path)
     export(output_file_path, LAST_LINE)
 
-def gen_data_model(o, output_file_path):
+def gen_data_model(input_file_path, output_file_path):
     index_of_line = 0
-    with open(o, 'r', encoding='utf-8') as file:
+    with open(input_file_path, 'r', encoding='utf-8') as file:
         lines = file.readlines()
         for line in lines:
             index_of_line += 1
@@ -79,8 +43,6 @@ def gen_data_model(o, output_file_path):
             export(output_file_path, f"\t<DataModel name=\"DataModel{index_of_line - 1}\">")
             export(output_file_path, "\t\t<Block name=\"Block\">")
             for i, field in enumerate(fields):
-                if i == len(fields) - 1:
-                    continue
                 field_length = len(field) * 4  # Assuming hex value length conversion
                 export(output_file_path,
                        f"\t\t\t<Number name=\"field{i}\" size=\"{field_length}\" value=\"{field}\" valueType=\"hex\" endian=\"network\" mutable=\"true\" />")
@@ -92,12 +54,8 @@ def gen_data_model(o, output_file_path):
 def gen_state_model(file_path, index_of_line):
     export(file_path, "\t<StateModel name=\"StateModel\" initialState=\"State\">")
     export(file_path, "\t\t<State name=\"State\">")
+    export(file_path, "\t\t\t<Action type=\"output\">")
     for i in range(1, index_of_line):
-        with open(o, 'r', encoding='utf-8') as file:
-            lines = file.readlines()
-            if lines.index(i)[len(lines.index(i) - 1)] == '00'
-                export(file_path, "\t\t\t<Action type=\"output\">")
-            export(file_path, "\t\t\t<Action type=\"input\">")
         export(file_path, f"\t\t\t\t<DataModel ref=\"DataModel{i}\" />")
     export(file_path, "\t\t\t</Action>")
     export(file_path, "\t\t</State>")
@@ -119,6 +77,7 @@ def gen_test(file_path):
     export(file_path, "\t\t</Logger>")
     export(file_path, "\t</Test>")
 
+# todo:
 def gen_agent(file_path):
     export(file_path, "\t<Agent name=\"LinAgent\">")
     export(file_path, "\t\t<Monitor class=\"Process\">")
@@ -132,10 +91,4 @@ def gen_agent(file_path):
     export(file_path, "\t</Agent>")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description='Transform protocol messages to Peach Fuzzer XML format.')
-    parser.add_argument('-fi', required=True, help='Input file containing the raw protocol messages.')
-    parser.add_argument('-mo', required=True, help='File containing the format inference results.')
-    parser.add_argument('-md', required=True, help='File containing the message direction list.')
-    parser.add_argument('-o', required=True, help='Output file to save the refined results.')
-    args = parser.parse_args()
-    transform(args.fi, args.mo, args.md, args.o)
+    transform()
