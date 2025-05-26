@@ -11,10 +11,12 @@ pre2fuzz
 │           └── other necessary files
 └── scripts: contains all scripts for running experiments and analyzing results
     ├── execution
-    │   └── PRE2Fuzz_pre.sh: main script to run reverse experiments
-    │   └── PRE2Fuzz_tran.py: main script to run transform experiments
-    │   └── PRE2Fuzz_fuzz.sh: main script to run fuzzing experiments
-    └── ...
+    │   └── prefuzzbench_pre.sh: main script to run reverse experiments
+    │   └── transform.py: main script to run transform experiments
+    │   └── prefuzzbench_fuzz.sh: main script to run fuzzing experiments
+    │   ...
+    └── analysis
+        └── profuzzbench_plot.py: sample script for plotting the results
 └── config.ini: configuration file
 └── README.md: this file
 ```
@@ -47,34 +49,30 @@ docker pull netplier:out
 ```
 
 ## Step-2. Run reversing
-Run PRE2Fuzz_pre.sh script to start an experiment. The script takes 3 arguments as listed below.
-- ***1st argument (TRAFFIC)*** : pcap file
-- ***2th argument (REVERSE_TOOL)***   : reverse tool name (e.g., netplier)
-- ***3th argument (SAVETO)***  : path to keep the results
+Run prefuzzbench_pre.sh script to start an experiment. The script takes 3 arguments as listed below.
+- ***1st argument (PROTOCOL)*** : name of the protocol implementation
+- ***2th argument (PRE)***   : reverse tool name (e.g., netplier)
+- ***3th argument (TIMEOUT)***  : time for fuzzing in seconds
+The following commands run an instance of Peach to fuzz LightFTP for 5 minutes.
 
 ```bash
 cd $PFBENCH/scripts
-sudo chmod +x PRE2Fuzz_pre.sh
-./PRE2Fuzz_pre.sh - i lightftp.pcap -r netplier:out -o in/lightftp.out
+sudo chmod +x prefuzzbench_pre.sh
+./prefuzzbench_pre.sh lightftp netplier:out 300
 ```
 _________________
 A successful script execution will produce output similar to this:
 ```
-1.Inferring
 NETPLIER:OUT: Collecting results from container and save them to $PFBENCH/in
 NETPLIER:OUT: I am done!
 ```
 
 ## Step-3. Run transforming
-- ***1st argument (FORMAT_INFERENCE)*** : format inference results file
-- ***2rd argument (MESSAGE_ORDER)***   : message order file
-- ***3th argument (MESSAGE_DIRECTION)***   : message direction file
-- ***4th argument (SAVETO)***  : path to keep the results
-The following commands refine the format inferring results and transform the reverse result to a Pit file.
+The following commands transform the reverse result to a Pit file.
 Before running the script, you should edit the config.ini as your wish.
 ```bash
 cd $PFBENCH/scripts
-sudo python PRE2Fuzz_tran.py -fi lightftp.out -mo order.out -md direction.out -o out/lightftp.xml
+sudo python transform.py
 ```
 
 ## Step-4. Run fuzzing
@@ -82,23 +80,34 @@ sudo python PRE2Fuzz_tran.py -fi lightftp.out -mo order.out -md direction.out -o
 - ***2rd argument (SAVETO)***   : path to a folder keeping the results
 - ***3th argument (FUZZER)***   : fuzzer name (e.g., peach)
 - ***4th argument (TIMEOUT)***  : time for fuzzing in seconds
-- ***5th argument (TEMPLATE)***  : test template file
 The following commands run an instances of Peach to fuzz LightFTP for 5 minutes.
 
 ```bash
 cd $PFBENCH
-sudo mkdir results
+sudo mkdir results-lightftp
 cd scripts
-sudo chmod +x PRE2Fuzz_fuzz.sh
-sudo ./PRE2Fuzz_fuzz.sh -p lightftp -o results -f peach -t 300 -x lightftp.xml
+sudo chmod +x prefuzzbench_fuzz.sh
+sudo ./prefuzzbench_fuzz.sh lightftp results-lightftp peach 300
 ```
 
+## Step-5. Collect the results
+All results are stored in tar files within the folder created in Step-2 (results-lightftp). This includes directories named similarly to peach-1-branch and peach-1-logs, where peach-1-branch contains the collected branch coverage data and peach-1-logs contains the log files from the Peach testing process, including the number of test runs and potential bug reports.
+
+## Step-6. Analyze the results
+The branch coverage data collected in Step 3 can be used for plotting. We provide a sample Python script profuzzbench_plot.py to visualize code coverage over time. Use the following command to plot the results and save them to a file.
+```bash
+cd $PFBENCH/results-lightftp
+
+profuzzbench_plot.py -i <input_data> -o <output_plot_file>
+```
+Replace <input_data> with the path to your coverage data and <output_plot_file> with the desired filename for your plot.
+
 ## Full process excution
-You can also run the PRE2Fuzz_common script for the full process excution.
+You can also run the prefuzzbench_common script for the full process excution.
 ```bash
 cd $PFBENCH
-sudo mkdir results
+sudo mkdir results-lightftp
 cd scripts
-sudo chmod +x PRE2Fuzz_common.sh
-sudo ./PRE2Fuzz_common.sh -p lightftp -o results -r netplier:out -f peach -t 300 -md direction.out -mo order.out -i lightftp.pcap
+sudo chmod +x prefuzzbench_common.sh
+sudo ./prefuzzbench_common.sh lightftp results-lightftp netplier:out peach 300
 ```
